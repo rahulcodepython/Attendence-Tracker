@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .subject-card {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .attendance-inputs {
+            display: grid;
+            gap: 10px;
+        }
+
+        .attendance-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="section">
+            <h2>Current Attendance</h2>
+            <div id="attendanceDisplay" class="subject-grid"></div>
+        </div>
+
+        <div class="section">
+            <h2>Record Attendance</h2>
+            <select id="daySelector">
+                <option value="MONDAY">Monday</option>
+                <option value="TUESDAY">Tuesday</option>
+                <option value="WEDNESDAY">Wednesday</option>
+                <option value="THURSDAY">Thursday</option>
+                <option value="FRIDAY">Friday</option>
+                <option value="SATURDAY">Saturday</option>
+            </select>
+
+            <div id="attendanceInputs" class="attendance-inputs"></div>
+
+            <button onclick="processAttendance()">Attend Day</button>
+        </div>
+
+        <div class="section">
+            <h2>Results</h2>
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data structures
+        let CLASS_ROUTINE = {
+            MONDAY: [''],
+            TUESDAY: ['COMPUTER_NETWORK', 'COMPUTER_NETWORK', '', 'PHP_LAB', '', '', '', '', ''],
+            WEDNESDAY: ['', 'SOFT_SKILL', 'ENGLISH', 'IKS', 'IKS', '', 'FULL_STACK_LAB', 'FULL_STACK_LAB', 'FULL_STACK_LAB'],
+            THURSDAY: ['', 'SOFT_SKILL', '', 'COMPUTER_NETWORK', 'FULL_STACK_LAB', '', 'DAA_LAB', 'DAA_LAB', 'DAA_LAB'],
+            FRIDAY: ['', 'IKS', '', 'DAA', '', 'ENGLISH', 'PHP_LAB', 'PHP_LAB', 'PHP_LAB'],
+            SATURDAY: ['IKS', 'COMPUTER_NETWORK', 'DAA_LAB', '', 'DAA', 'FULL_STACK', 'FULL_STACK', 'APTI', '']
+        };
+
+        let TOTAL_CLASSES_BY_SUBJECT = {
+            COMPUTER_NETWORK: 45,
+            FULL_STACK: 22,
+            FULL_STACK_LAB: 48,
+            DAA: 21,
+            DAA_LAB: 47,
+            IKS: 43,
+            PHP_LAB: 40,
+            SOFT_SKILL: 22,
+            APTI: 11,
+            ENGLISH: 0
+        };
+
+        let TOTAL_CLASSES_ATTENDED_BY_SUBJECT = {
+            COMPUTER_NETWORK: 42,
+            FULL_STACK: 18,
+            FULL_STACK_LAB: 39,
+            DAA: 20,
+            DAA_LAB: 37,
+            IKS: 40,
+            PHP_LAB: 32,
+            SOFT_SKILL: 21,
+            APTI: 8,
+            ENGLISH: 0
+        };
+
+        // Initial display
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAttendanceDisplay();
+            updateAttendanceInputs();
+        });
+
+        // Update day selection
+        document.getElementById('daySelector').addEventListener('change', updateAttendanceInputs);
+
+        function updateAttendanceDisplay() {
+            const container = document.getElementById('attendanceDisplay');
+            container.innerHTML = '';
+
+            for (const subject in TOTAL_CLASSES_BY_SUBJECT) {
+                const div = document.createElement('div');
+                div.className = 'subject-card';
+                const attended = TOTAL_CLASSES_ATTENDED_BY_SUBJECT[subject];
+                const total = TOTAL_CLASSES_BY_SUBJECT[subject];
+                const percentage = total === 0 ? 0 : ((attended / total) * 100).toFixed(2);
+
+                div.innerHTML = `
+                    <strong>${subject}</strong><br>
+                    Attended: ${attended}<br>
+                    Total: ${total}<br>
+                    Percentage: ${percentage}%
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function updateAttendanceInputs() {
+            const day = document.getElementById('daySelector').value;
+            const subjects = CLASS_ROUTINE[day];
+            const container = document.getElementById('attendanceInputs');
+            container.innerHTML = '';
+
+            subjects.forEach((subject, index) => {
+                if (!subject) return;
+
+                const div = document.createElement('div');
+                div.className = 'attendance-item';
+                div.innerHTML = `
+                    <span>Period ${index + 1}: ${subject}</span>
+                    <select class="attendance-select">
+                        <option value="Y">Attended</option>
+                        <option value="N">Absent</option>
+                    </select>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function calculateOverallAttendance() {
+            const total = Object.values(TOTAL_CLASSES_BY_SUBJECT).reduce((a, b) => a + b, 0);
+            const attended = Object.values(TOTAL_CLASSES_ATTENDED_BY_SUBJECT).reduce((a, b) => a + b, 0);
+            return total === 0 ? 0 : (attended / total) * 100;
+        }
+
+        function processAttendance() {
+            const day = document.getElementById('daySelector').value;
+            const beforePercentage = calculateOverallAttendance();
+            const selects = document.querySelectorAll('.attendance-select');
+
+            CLASS_ROUTINE[day].forEach((subject, index) => {
+                if (!subject) return;
+                const attended = selects[index]?.value === 'Y';
+
+                TOTAL_CLASSES_BY_SUBJECT[subject]++;
+                if (attended) {
+                    TOTAL_CLASSES_ATTENDED_BY_SUBJECT[subject]++;
+                }
+            });
+
+            updateAttendanceDisplay();
+            const afterPercentage = calculateOverallAttendance();
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                Before: ${beforePercentage.toFixed(2)}%<br>
+                After: ${afterPercentage.toFixed(2)}%<br>
+                Change: ${(afterPercentage - beforePercentage).toFixed(2)}%
+            `;
+        }
+    </script>
+</body>
+
+</html>
