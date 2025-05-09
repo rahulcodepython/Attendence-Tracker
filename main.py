@@ -13,28 +13,28 @@ CLASS_ROUTINE = dict(
 )
 
 TOTAL_CLASSES_BY_SUBJECT = dict(
-    COMPUTER_NETWORK=45,
-    FULL_STACK=22,
-    FULL_STACK_LAB=48,
-    DAA=21,
-    DAA_LAB=47,
-    IKS=43,
-    PHP_LAB=40,
-    SOFT_SKILL=22,
-    APTI=11,
+    COMPUTER_NETWORK=50,
+    FULL_STACK=26,
+    FULL_STACK_LAB=52,
+    DAA=23,
+    DAA_LAB=52,
+    IKS=48,
+    PHP_LAB=44,
+    SOFT_SKILL=24,
+    APTI=13,
     ENGLISH=0
 )
 
 TOTAL_CLASSES_ATTENDED_BY_SUBJECT = dict(
-    COMPUTER_NETWORK=42,
-    FULL_STACK=18,
-    FULL_STACK_LAB=39,
-    DAA=20,
-    DAA_LAB=37,
-    IKS=40,
-    PHP_LAB=32,
-    SOFT_SKILL=21,
-    APTI=8,
+    COMPUTER_NETWORK=45,
+    FULL_STACK=20,
+    FULL_STACK_LAB=43,
+    DAA=21,
+    DAA_LAB=38,
+    IKS=43,
+    PHP_LAB=35,
+    SOFT_SKILL=23,
+    APTI=9,
     ENGLISH=0
 )
 
@@ -199,12 +199,15 @@ def main():
         'N' indicates absence, and an empty string indicates no data.
     """
     # go_to_collage('SATURDAY', ['N', 'N', 'N', '', 'N', 'N', 'N', 'N', ''])
-    go_to_collage('SATURDAY')
+    # go_to_collage('SATURDAY')
     go_to_collage('TUESDAY')
     go_to_collage('WEDNESDAY', ['', 'Y', 'Y', 'Y', 'Y', '', 'N', 'N', 'N'])
     go_to_collage('THURSDAY', ['', 'Y', '', 'Y', 'Y', '', 'N', 'N', 'N'])
-    go_to_collage('FRIDAY')
-    go_to_collage('SATURDAY')
+    go_to_collage('FRIDAY', ['', 'Y', '', 'Y', '', 'Y', 'Y', 'Y', 'N'])
+    go_to_collage('SATURDAY', ['N', 'N', 'N', '', 'N', 'N', 'N', 'N', ''])
+    go_to_collage('TUESDAY')
+    # go_to_collage('WEDNESDAY', ['', 'N', 'N', 'N', 'N', '', 'N', 'N', 'N'])
+    go_to_collage('WEDNESDAY', ['', 'Y', 'Y', 'Y', 'Y', '', 'N', 'N', 'N'])
 
 
 if __name__ == '__main__':
