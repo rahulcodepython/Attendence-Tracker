@@ -43,14 +43,14 @@ class RoutineExtractor:
                         col)
 
             self.df = pd.DataFrame(table_data, columns=header)
+            self.refine_dataframe_columns()
 
-            if "Time Slot" in self.df.columns:
-                self.df.set_index("Time Slot", inplace=True)
-                local_df = self.df.T  # now days are index, time slots are columns
-                local_df.reset_index(inplace=True)
-                local_df.rename(columns={"index": "Day"}, inplace=True)
-
-                self.df = local_df.fillna("")
+    def refine_dataframe_columns(self):
+        if "Time Slot" in self.df.columns:
+            self.df.set_index("Time Slot", inplace=True)
+            local_df = self.df.T  # now days are index, time slots are columns
+            local_df.reset_index(inplace=True)
+            local_df.rename(columns={"index": "Day"}, inplace=True)
 
     def save_to_csv(self):
         self.df.to_csv(self.routine_csv, index=False)
@@ -71,6 +71,11 @@ class RoutineExtractor:
 
     def process(self):
         self.extract_routine_table()
+
+    def load_routine_from_csv(self):
+        self.df = pd.read_csv(self.routine_csv)
+        self.refine_dataframe_columns()
+        self.df = self.df.fillna("")
 
 class AttendanceExtractor:
     def __init__(self, classes:str, output_csv: str):
@@ -182,14 +187,14 @@ DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT"]
 ATTENDANCE_CONTENT = """
 APTI401	Aptitude-IV	9/14	64
 BUPRP	Preparatory Paper	1/1	100
-SBC	Soft Skill Boot Camp	25/27	93
-BCA47111 (T)	Design and Analysis of Algorithm	23/26	88
-BCA47111 (P)	Design and Analysis of Algorithm	41/56	73
-BCA49112	PHP and MySQL Lab	40/49	82
-BCA47113 (T)	Full-Stack Development-I	20/28	71
-BCA47113 (P)	Full-Stack Development-I	44/59	75
-BCA40201	Sustainability in Indian Knowledge System	46/54	85
-BCA40202	Computer Network	49/56	88
+SBC	Soft Skill Boot Camp	25/29	86
+BCA47111 (T)	Design and Analysis of Algorithm	23/27	85
+BCA47111 (P)	Design and Analysis of Algorithm	44/59	75
+BCA49112	PHP and MySQL Lab	40/53	75
+BCA47113 (T)	Full-Stack Development-I	20/30	67
+BCA47113 (P)	Full-Stack Development-I	45/60	75
+BCA40201	Sustainability in Indian Knowledge System	48/60	80
+BCA40202	Computer Network	50/59	85
 """
 
 print("Routine Extractor")
@@ -202,7 +207,8 @@ course_details = attendance_extractor.course_details
 
 
 routine_extractor = RoutineExtractor(ROUTINE_FILE, ROUTINE_CSV, course_details)
-routine_extractor.process()
+routine_extractor.load_routine_from_csv()
+# routine_extractor.process()
 routine_extractor.print_df_routine_table()  # Print routine table
 routine_dict = routine_extractor.processed_routine_data()
 
@@ -289,4 +295,3 @@ while True:
     attendance_extractor.parse_dataframe()
     # attendance_extractor.print_df_attendance_table()
     attendance_extractor.print_current_attendance_status()
-
